@@ -10,9 +10,10 @@ pub struct Rpc {
 }
 
 impl Rpc {
-    pub fn new(url: &str, tries: u64) -> Result<Rpc> {
+    /// `tries` attempts per call, each waiting up to `timeout_secs` for an answer.
+    pub fn new(url: &str, tries: u64, timeout_secs: u64) -> Result<Rpc> {
         let client = reqwest::blocking::Client::builder()
-            .timeout(Duration::from_secs(180))
+            .timeout(Duration::from_secs(timeout_secs))
             .build()?;
         Ok(Rpc { url: url.to_string(), client, tries })
     }
@@ -21,7 +22,7 @@ impl Rpc {
     pub fn remote() -> Result<Rpc> {
         let url = std::env::var("BASE_RPC_URL")
             .map_err(|_| anyhow!("set BASE_RPC_URL to an archive RPC endpoint for Base"))?;
-        Rpc::new(&url, 6)
+        Rpc::new(&url, 6, 180)
     }
 
     pub fn url(&self) -> &str {

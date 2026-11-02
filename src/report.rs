@@ -1,6 +1,6 @@
 use crate::replay::Outcome;
 use crate::rpc::Rpc;
-use crate::util::{amount, short, word};
+use crate::util::{amount, pct, short, word, PM};
 use serde_json::json;
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -14,19 +14,30 @@ fn finding(level: &'static str, kind: &'static str, text: String) -> Finding {
     Finding { level, kind, text }
 }
 
-/// Token symbols and decimals, looked up once.
-pub struct Tokens {
+/// Token symbols and decimals (looked up once) and names for known addresses.
+pub struct Names {
     rpc: Rpc,
-    cache: BTreeMap<String, (String, u32)>,
+    tokens: BTreeMap<String, (String, u32)>,
+    labels: BTreeMap<String, String>,
 }
 
-impl Tokens {
-    pub fn new(rpc: Rpc) -> Tokens {
-        Tokens { rpc, cache: BTreeMap::new() }
+impl Names {
+    pub fn new(rpc: Rpc) -> Names {
+        let mut labels = BTreeMap::new();
+        labels.insert(PM.to_string(), "PoolManager".to_string());
+        Names { rpc, tokens: BTreeMap::new(), labels }
     }
 
-    pub fn info(&mut self, token: &str) -> (String, u32) {
-        if let Some(i) = self.cache.get(token) {
+    pub fn label(&mut self, addr: &str, name: &str) {
+        self.labels.insert(addr.to_ascii_lowercase(), name.to_string());
+    }
+
+    pub fn name(&self, addr: &str) -> String {
+        self.labels.get(addr).cloned().unwrap_or_else(|| short(addr))
+    }
+
+    pub fn token(&mut self, token: &str) -> (String, u32) {
+        if let Some(i) = self.tokens.get(token) {
             return i.clone();
         }
         let symbol = self
@@ -43,7 +54,7 @@ impl Tokens {
             .and_then(|v| v.as_str().and_then(word))
             .map(|d| d.clamp(0, 36) as u32)
             .unwrap_or(18);
-        self.cache.insert(token.to_string(), (symbol.clone(), decimals));
+        self.tokens.insert(token.to_string(), (symbol.clone(), decimals));
         (symbol, decimals)
     }
 }
@@ -81,7 +92,7 @@ pub fn first_log_difference(a: &Outcome, b: &Outcome) -> String {
 }
 
 /// Everything that differs between the deployed code's run (old) and the new code's run.
-pub fn differences(user: &str, old: &Outcome, new: &Outcome, tokens: &mut Tokens) -> Vec<Finding> {
+pub fn differences(user: &str, old: &Outcome, new: &Outcome, names: &mut Names) -> Vec<Finding> {
     let mut out = Vec::new();
     match (old.ok, new.ok) {
         (true, false) => {
@@ -106,18 +117,24 @@ pub fn differences(user: &str, old: &Outcome, new: &Outcome, tokens: &mut Tokens
         }
     }
     for (token, deltas) in &change {
-        let (sym, dec) = tokens.info(token);
+        let (sym, dec) = names.token(token);
         let user_d: i128 = deltas.iter().filter(|(a, _)| a == user).map(|(_, d)| *d).sum();
-        let mut gainers: Vec<&(String, i128)> = deltas.iter().filter(|(a, d)| a != user && *d > 0).collect();
-        gainers.sort_by(|x, y| y.1.cmp(&x.1));
-        let gained: Vec<String> = gainers
+        let mut others: Vec<&(String, i128)> = deltas.iter().filter(|(a, _)| a != user).collect();
+        others.sort_by(|x, y| y.1.unsigned_abs().cmp(&x.1.unsigned_abs()));
+        let gained: Vec<String> = others
+            .iter()
+            .filter(|(_, d)| *d > 0)
+            .take(3)
+            .map(|(a, d)| format!("{} +{}", names.name(a), amount(*d, dec)))
+            .collect();
+        let moved: Vec<String> = others
             .iter()
             .take(3)
-            .map(|(a, d)| format!("{} +{}", short(a), amount(*d, dec)))
+            .map(|(a, d)| format!("{} {}{}", names.name(a), if *d > 0 { "+" } else { "" }, amount(*d, dec)))
             .collect();
         let base = old.flows.get(&(token.clone(), user.to_string())).copied().unwrap_or(0);
-        let pct = if base != 0 {
-            format!(" ({:+.3}%)", user_d as f64 * 100.0 / base.unsigned_abs() as f64)
+        let rel = if base != 0 {
+            format!(" ({})", pct(user_d as f64 * 100.0 / base.unsigned_abs() as f64))
         } else {
             String::new()
         };
@@ -125,19 +142,19 @@ pub fn differences(user: &str, old: &Outcome, new: &Outcome, tokens: &mut Tokens
             out.push(finding(
                 "DANGER",
                 "swapper-loses",
-                format!("swapper ends with {} {sym} less{pct}; gained by: {}", amount(-user_d, dec), gained.join(", ")),
+                format!("swapper ends with {} {sym} less{rel}; gained by: {}", amount(-user_d, dec), gained.join(", ")),
             ));
         } else if user_d > 0 {
             out.push(finding(
                 "REVIEW",
                 "swapper-gains",
-                format!("swapper ends with {} {sym} more{pct}", amount(user_d, dec)),
+                format!("swapper ends with {} {sym} more{rel}", amount(user_d, dec)),
             ));
         } else {
             out.push(finding(
                 "REVIEW",
                 "flows-changed",
-                format!("{sym} moves differently between other accounts: {}", gained.join(", ")),
+                format!("{sym} moves differently between other accounts: {}", moved.join(", ")),
             ));
         }
     }
@@ -153,15 +170,18 @@ pub fn differences(user: &str, old: &Outcome, new: &Outcome, tokens: &mut Tokens
         out.push(finding(
             "REVIEW",
             "gas-changed",
-            format!("gas {} -> {} ({:+.1}%)", old.gas, new.gas, (ng - og) * 100.0 / og),
+            format!("gas {} -> {} ({})", old.gas, new.gas, pct((ng - og) * 100.0 / og)),
         ));
     }
     out
 }
 
+/// The results of rehearsing one build against every transaction.
 #[derive(Default)]
 pub struct Summary {
+    pub name: String,
     pub failed: usize,
+    pub verified: usize,
     same: usize,
     changed: usize,
     changed_verified: usize,
@@ -171,7 +191,12 @@ pub struct Summary {
 }
 
 impl Summary {
+    pub fn new(name: &str) -> Summary {
+        Summary { name: name.to_string(), ..Default::default() }
+    }
+
     pub fn add(&mut self, hash: &str, user: &str, verified: bool, findings: Vec<Finding>) {
+        self.verified += verified as usize;
         if findings.is_empty() {
             self.same += 1;
             return;
@@ -197,32 +222,39 @@ impl Summary {
         self.details.push(block);
     }
 
-    pub fn print(&self, n: usize) {
-        println!("\n==== hook upgrade rehearsal ====");
-        println!("real transactions replayed:     {n}");
-        println!("could not replay:               {}", self.failed);
-        println!("same behaviour:                 {}", self.same);
-        println!(
-            "different behaviour:            {}  ({} of them on transactions whose replay matches mainnet exactly)",
+    /// The report as text, with at most `max_details` per-transaction blocks.
+    pub fn render(&self, n: usize, max_details: usize) -> String {
+        let mut o = String::new();
+        o.push_str(&format!("==== hook upgrade rehearsal: {} ====\n", self.name));
+        o.push_str(&format!("real transactions replayed:     {n}\n"));
+        o.push_str(&format!("could not replay:               {}\n", self.failed));
+        o.push_str(&format!("deployed code matches mainnet:  {} / {}\n", self.verified, n - self.failed));
+        o.push_str(&format!("same behaviour:                 {}\n", self.same));
+        o.push_str(&format!(
+            "different behaviour:            {}  ({} of them on transactions whose replay matches mainnet exactly)\n",
             self.changed, self.changed_verified
-        );
+        ));
         if !self.by_kind.is_empty() {
-            println!("\nfindings (transactions affected):");
+            o.push_str("\nfindings (transactions affected):\n");
             for ((level, kind), count) in &self.by_kind {
-                println!("  {level:<6} {kind:<15} {count}");
+                o.push_str(&format!("  {level:<6} {kind:<15} {count}\n"));
             }
         }
         if !self.dangers.is_empty() {
-            println!("\nDANGER: swappers who would lose value with the new code:");
-            for d in self.dangers.iter().take(15) {
-                println!("  {d}");
+            o.push_str("\nDANGER: swappers who would lose value with the new code:\n");
+            for d in &self.dangers {
+                o.push_str(&format!("  {d}\n"));
             }
         }
         if !self.details.is_empty() {
-            println!("\nfirst transactions that behave differently:");
-            for d in self.details.iter().take(8) {
-                println!("\n{d}");
+            o.push_str("\ntransactions that behave differently:\n");
+            for d in self.details.iter().take(max_details) {
+                o.push_str(&format!("\n{d}\n"));
+            }
+            if self.details.len() > max_details {
+                o.push_str(&format!("\n... and {} more\n", self.details.len() - max_details));
             }
         }
+        o
     }
 }

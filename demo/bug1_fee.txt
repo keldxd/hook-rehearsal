@@ -1,0 +1,67 @@
+==== hook upgrade rehearsal: bug1_fee ====
+real transactions replayed:     10
+could not replay:               0
+deployed code matches mainnet:  9 / 10
+same behaviour:                 1
+different behaviour:            9  (8 of them on transactions whose replay matches mainnet exactly)
+
+findings (transactions affected):
+  DANGER swapper-loses   4
+  REVIEW events-changed  9
+  REVIEW flows-changed   5
+
+DANGER: swappers who would lose value with the new code:
+  0x8accea636955a0c4  swapper ends with 0.161971 ClawBank less (-0.050%); gained by: PoolManager +0.161971
+  0x838901b95c650c64  swapper ends with 0.000000202846 WETH less (-0.050%); gained by: 0xe85a..83a9 +0.0000203067
+  0x92f4bd3f35959863  swapper ends with 0.0000000020284 WETH less (-0.050%); gained by: 0xe85a..83a9 +0.000000202846
+  0xe31cbc77133bb7b8  swapper ends with 0.000000000000226107 WETH less (-0.050%); gained by: 0xe85a..83a9 +0.00000588777
+
+transactions that behave differently:
+
+0x60acf7144cc88f65  swapper 0xb32c..1034
+  (replay of the deployed code matches mainnet exactly)
+  REVIEW flows-changed   WETH moves differently between other accounts: PoolManager +0.00000000532943, 0x67d0..81df -0.00000000532943
+  REVIEW events-changed  28 vs 28 events, first difference at #22 (from 0x4985..2b2b)
+
+0x8accea636955a0c4  swapper 0xf5c2..7ead
+  (replay of the deployed code matches mainnet exactly)
+  DANGER swapper-loses   swapper ends with 0.161971 ClawBank less (-0.050%); gained by: PoolManager +0.161971
+  REVIEW events-changed  20 vs 20 events, first difference at #16 (from 0x4985..2b2b)
+
+0x1b3117e8f1cd1cfe  swapper 0x9d33..d2f4
+  (replay of the deployed code matches mainnet exactly)
+  REVIEW flows-changed   WETH moves differently between other accounts: 0xe85a..83a9 +0.000000000497757, PoolManager -0.000000000492784, 0xf362..5d68 -0.00000000000497286
+  REVIEW events-changed  25 vs 25 events, first difference at #3 (from 0x4200..0006)
+
+0x20e604477f5cbe29  swapper 0x728f..f500
+  (replay of the deployed code matches mainnet exactly)
+  REVIEW flows-changed   FASCI moves differently between other accounts: PoolManager +78.61214344, 0xb5ba..381f -78.61214344
+  REVIEW events-changed  16 vs 16 events, first difference at #10 (from 0x4985..2b2b)
+
+0x838901b95c650c64  swapper 0x9d33..d2f4
+  (replay of the deployed code matches mainnet exactly)
+  DANGER swapper-loses   swapper ends with 0.000000202846 WETH less (-0.050%); gained by: 0xe85a..83a9 +0.0000203067
+  REVIEW events-changed  20 vs 20 events, first difference at #3 (from 0x4985..2b2b)
+
+0x92f4bd3f35959863  swapper 0x1991..0291
+  (replay of the deployed code matches mainnet exactly)
+  DANGER swapper-loses   swapper ends with 0.0000000020284 WETH less (-0.050%); gained by: 0xe85a..83a9 +0.000000202846
+  REVIEW events-changed  20 vs 20 events, first difference at #3 (from 0x4985..2b2b)
+
+0x83f4c5c6b6e5be56  swapper 0xfdee..da0c
+  (replay of the deployed code matches mainnet exactly)
+  REVIEW flows-changed   WETH moves differently between other accounts: PoolManager -0.000000270098, 0xb4cb..00e5 +0.000000270098
+  REVIEW flows-changed   USDC moves differently between other accounts: PoolManager +0.000621, 0xb4cb..00e5 -0.00062, 0xf362..5d68 -0.000001
+  REVIEW flows-changed   FARVERSE moves differently between other accounts: PoolManager +824.9524914, 0x8390..653f -824.9524914
+  REVIEW events-changed  47 vs 47 events, first difference at #9 (from 0x4985..2b2b)
+
+0xd786ab406db51834  swapper 0xa5a5..a142
+  (replay of the deployed code matches mainnet exactly)
+  REVIEW flows-changed   WETH moves differently between other accounts: PoolManager +0.0000000000225162, 0xf362..5d68 -0.0000000000225162
+  REVIEW flows-changed   Poidh moves differently between other accounts: PoolManager +46805.1422619, 0x9a47..67fa -46805.1422619
+  REVIEW events-changed  42 vs 42 events, first difference at #22 (from 0x4985..2b2b)
+
+0xe31cbc77133bb7b8  swapper 0x9d33..d2f4
+  (replay of the deployed code differs from mainnet, lower confidence)
+  DANGER swapper-loses   swapper ends with 0.000000000000226107 WETH less (-0.050%); gained by: 0xe85a..83a9 +0.00000588777
+  REVIEW events-changed  27 vs 27 events, first difference at #2 (from 0x4200..0006)

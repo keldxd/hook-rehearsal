@@ -32,7 +32,7 @@ impl Anvil {
             .stderr(Stdio::null())
             .spawn()
             .context("could not start anvil (is Foundry installed?)")?;
-        let rpc = Rpc::new(&format!("http://127.0.0.1:{port}"), 1)?;
+        let rpc = Rpc::new(&format!("http://127.0.0.1:{port}"), 1, 900)?;
         let mut anvil = Anvil { child, rpc };
         for _ in 0..300 {
             if anvil.rpc.call("eth_blockNumber", json!([])).is_ok() {

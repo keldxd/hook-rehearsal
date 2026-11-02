@@ -1,0 +1,42 @@
+==== hook upgrade rehearsal: bug2_math ====
+real transactions replayed:     10
+could not replay:               0
+deployed code matches mainnet:  9 / 10
+same behaviour:                 5
+different behaviour:            5  (4 of them on transactions whose replay matches mainnet exactly)
+
+findings (transactions affected):
+  DANGER swapper-loses   2
+  REVIEW events-changed  5
+  REVIEW flows-changed   3
+
+DANGER: swappers who would lose value with the new code:
+  0x8accea636955a0c4  swapper ends with 0.00260322 ClawBank less (-0.000802%); gained by: PoolManager +0.00260322
+  0xe31cbc77133bb7b8  swapper ends with 0.000000000000000007 WETH less (-0.000002%); gained by: 0xe85a..83a9 +0.0000000946288
+
+transactions that behave differently:
+
+0x8accea636955a0c4  swapper 0xf5c2..7ead
+  (replay of the deployed code matches mainnet exactly)
+  DANGER swapper-loses   swapper ends with 0.00260322 ClawBank less (-0.000802%); gained by: PoolManager +0.00260322
+  REVIEW events-changed  20 vs 20 events, first difference at #16 (from 0x4985..2b2b)
+
+0x1b3117e8f1cd1cfe  swapper 0x9d33..d2f4
+  (replay of the deployed code matches mainnet exactly)
+  REVIEW flows-changed   WETH moves differently between other accounts: 0xe85a..83a9 +0.00000000000800003, PoolManager -0.0000000000079201, 0xf362..5d68 -0.000000000000079925
+  REVIEW events-changed  25 vs 25 events, first difference at #3 (from 0x4200..0006)
+
+0x20e604477f5cbe29  swapper 0x728f..f500
+  (replay of the deployed code matches mainnet exactly)
+  REVIEW flows-changed   FASCI moves differently between other accounts: PoolManager +4.6242437, 0xb5ba..381f -4.6242437
+  REVIEW events-changed  16 vs 16 events, first difference at #10 (from 0x4985..2b2b)
+
+0xd786ab406db51834  swapper 0xa5a5..a142
+  (replay of the deployed code matches mainnet exactly)
+  REVIEW flows-changed   Poidh moves differently between other accounts: PoolManager +752.25861232, 0x9a47..67fa -752.25861232
+  REVIEW events-changed  42 vs 42 events, first difference at #30 (from 0x4985..2b2b)
+
+0xe31cbc77133bb7b8  swapper 0x9d33..d2f4
+  (replay of the deployed code differs from mainnet, lower confidence)
+  DANGER swapper-loses   swapper ends with 0.000000000000000007 WETH less (-0.000002%); gained by: 0xe85a..83a9 +0.0000000946288
+  REVIEW events-changed  27 vs 27 events, first difference at #2 (from 0x4200..0006)

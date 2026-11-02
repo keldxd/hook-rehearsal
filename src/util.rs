@@ -53,21 +53,56 @@ pub fn short(a: &str) -> String {
     }
 }
 
-/// A raw token amount with its decimals, e.g. 113798858 with 6 -> "113.798858".
+/// A raw token amount with its decimals: 8 decimals for amounts of 1 or more,
+/// otherwise 6 significant digits (0.000000203 rather than 0.00000000).
 pub fn amount(v: i128, decimals: u32) -> String {
     let sign = if v < 0 { "-" } else { "" };
     let a = v.unsigned_abs();
+    let decimals = decimals.min(38);
     if decimals == 0 {
         return format!("{sign}{a}");
     }
-    let base = 10u128.pow(decimals.min(38));
+    let base = 10u128.pow(decimals);
     let whole = a / base;
     let frac = format!("{:0width$}", a % base, width = decimals as usize);
+    let keep = if whole > 0 {
+        8
+    } else {
+        frac.find(|c: char| c != '0').map(|i| i + 6).unwrap_or(0)
+    };
+    let frac: String = frac.chars().take(keep.min(decimals as usize)).collect();
     let frac = frac.trim_end_matches('0');
-    let frac: String = frac.chars().take(8).collect();
     if frac.is_empty() {
         format!("{sign}{whole}")
     } else {
         format!("{sign}{whole}.{frac}")
+    }
+}
+
+/// A percentage with enough decimals to show small changes.
+pub fn pct(x: f64) -> String {
+    if x.abs() >= 0.01 {
+        format!("{x:+.3}%")
+    } else {
+        format!("{x:+.6}%")
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn amounts() {
+        assert_eq!(amount(113_798_858, 6), "113.798858");
+        assert_eq!(amount(203_000_000_000, 18), "0.000000203");
+        assert_eq!(amount(-1_500_000_000_000_000_000, 18), "-1.5");
+        assert_eq!(amount(0, 18), "0");
+    }
+
+    #[test]
+    fn words() {
+        assert_eq!(word("0x0000000000000000000000000000000000000000000000000000000006c86eca"), Some(113_798_858));
+        assert_eq!(word("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"), None);
     }
 }
