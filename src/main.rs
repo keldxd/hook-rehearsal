@@ -5,7 +5,7 @@ mod report;
 mod rpc;
 mod util;
 
-use anyhow::{bail, Context, Result};
+use anyhow::{Context, Result, bail};
 
 const USAGE: &str = "usage:
   hook-rehearsal fetch <hook address> [count]

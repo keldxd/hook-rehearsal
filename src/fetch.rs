@@ -1,7 +1,7 @@
 use crate::rpc::Rpc;
-use crate::util::{hex, num, s, topic_addr, PM, TRANSFER, ZERO};
+use crate::util::{PM, TRANSFER, ZERO, hex, num, s, topic_addr};
 use anyhow::Result;
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
 
@@ -16,7 +16,10 @@ pub fn touch(log: &Value) -> Vec<String> {
         .map(|a| a.iter().map(s).collect())
         .unwrap_or_default();
     if addr == PM {
-        vec![format!("pool:{}", topics.get(1).cloned().unwrap_or_default())]
+        vec![format!(
+            "pool:{}",
+            topics.get(1).cloned().unwrap_or_default()
+        )]
     } else if topics.first().map(String::as_str) == Some(TRANSFER) && topics.len() >= 3 {
         topics[1..3]
             .iter()
@@ -47,7 +50,11 @@ pub fn fetch(hook: &str, n: usize) -> Result<()> {
         )?;
         let mut window: Vec<(u64, u64, String)> = Vec::new();
         for l in logs.as_array().into_iter().flatten() {
-            window.push((num(&l["blockNumber"])?, num(&l["transactionIndex"])?, s(&l["transactionHash"])));
+            window.push((
+                num(&l["blockNumber"])?,
+                num(&l["transactionIndex"])?,
+                s(&l["transactionHash"]),
+            ));
         }
         window.sort();
         window.reverse();
@@ -64,7 +71,10 @@ pub fn fetch(hook: &str, n: usize) -> Result<()> {
     }
     hashes.truncate(n);
     hashes.reverse();
-    println!("found {}; downloading them and the related earlier transactions in their blocks", hashes.len());
+    println!(
+        "found {}; downloading them and the related earlier transactions in their blocks",
+        hashes.len()
+    );
 
     // 2. each transaction, its block, and the earlier transactions that touched the same things
     let mut blocks: BTreeMap<u64, (Value, Value)> = BTreeMap::new();
@@ -76,7 +86,10 @@ pub fn fetch(hook: &str, n: usize) -> Result<()> {
         let index = num(&tx["transactionIndex"])?;
         if !blocks.contains_key(&block) {
             let header = rpc.call("eth_getBlockByNumber", json!([hex(block), false]))?;
-            let logs = rpc.call("eth_getLogs", json!([{"fromBlock": hex(block), "toBlock": hex(block)}]))?;
+            let logs = rpc.call(
+                "eth_getLogs",
+                json!([{"fromBlock": hex(block), "toBlock": hex(block)}]),
+            )?;
             blocks.insert(block, (header, logs));
         }
         let (header, block_logs) = &blocks[&block];

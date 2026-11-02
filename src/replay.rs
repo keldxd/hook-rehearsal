@@ -2,9 +2,9 @@ use crate::anvil::Anvil;
 use crate::fetch::CACHE;
 use crate::report::{self, Names, Summary};
 use crate::rpc::Rpc;
-use crate::util::{num, s, short, topic_addr, word, TRANSFER};
-use anyhow::{bail, Context, Result};
-use serde_json::{json, Value};
+use crate::util::{TRANSFER, num, s, short, topic_addr, word};
+use anyhow::{Context, Result, bail};
+use serde_json::{Value, json};
 use std::collections::BTreeMap;
 use std::fs;
 use std::path::Path;
@@ -35,7 +35,10 @@ impl Outcome {
             .flatten()
             .map(|l| Log {
                 address: s(&l["address"]),
-                topics: l["topics"].as_array().map(|a| a.iter().map(s).collect()).unwrap_or_default(),
+                topics: l["topics"]
+                    .as_array()
+                    .map(|a| a.iter().map(s).collect())
+                    .unwrap_or_default(),
                 data: s(&l["data"]),
             })
             .collect();
@@ -43,13 +46,22 @@ impl Outcome {
         for l in &logs {
             if l.topics.len() == 3 && l.topics[0] == TRANSFER {
                 if let Some(v) = word(&l.data) {
-                    *flows.entry((l.address.clone(), topic_addr(&l.topics[1]))).or_insert(0) -= v;
-                    *flows.entry((l.address.clone(), topic_addr(&l.topics[2]))).or_insert(0) += v;
+                    *flows
+                        .entry((l.address.clone(), topic_addr(&l.topics[1])))
+                        .or_insert(0) -= v;
+                    *flows
+                        .entry((l.address.clone(), topic_addr(&l.topics[2])))
+                        .or_insert(0) += v;
                 }
             }
         }
         flows.retain(|_, v| *v != 0);
-        Ok(Outcome { ok, gas, logs, flows })
+        Ok(Outcome {
+            ok,
+            gas,
+            logs,
+            flows,
+        })
     }
 
     /// Same status and identical events as the other outcome.
@@ -64,7 +76,10 @@ pub fn load() -> Result<Vec<Value>> {
 }
 
 fn port() -> u16 {
-    std::env::var("ANVIL_PORT").ok().and_then(|p| p.parse().ok()).unwrap_or(8546)
+    std::env::var("ANVIL_PORT")
+        .ok()
+        .and_then(|p| p.parse().ok())
+        .unwrap_or(8546)
 }
 
 /// Queues a real transaction on the fork as its real sender, with its real fees and nonce.
@@ -116,13 +131,17 @@ fn run_isolated(anvil: &Anvil, e: &Value, code: Option<&str>) -> Result<Outcome>
 pub fn fidelity() -> Result<()> {
     let remote = Rpc::remote()?;
     let entries = load()?;
-    println!("replaying {} transactions on the deployed code", entries.len());
+    println!(
+        "replaying {} transactions on the deployed code",
+        entries.len()
+    );
     let (mut same, mut same_gas, mut failed) = (0usize, 0usize, 0usize);
     let mut diffs: Vec<String> = Vec::new();
     for (i, e) in entries.iter().enumerate() {
         let hash = s(&e["hash"]);
         let block = num(&e["block"])?;
-        let result = Anvil::fork(remote.url(), block - 1, port()).and_then(|a| run_block(&a, e, None));
+        let result =
+            Anvil::fork(remote.url(), block - 1, port()).and_then(|a| run_block(&a, e, None));
         match result {
             Ok(out) => {
                 let real = Outcome::from_receipt(&e["receipt"])?;
@@ -137,12 +156,20 @@ pub fn fidelity() -> Result<()> {
                     if ok { "identical" } else { "DIFFERENT" }
                 );
                 if !ok {
-                    diffs.push(format!("{hash}: {}", report::first_log_difference(&real, &out)));
+                    diffs.push(format!(
+                        "{hash}: {}",
+                        report::first_log_difference(&real, &out)
+                    ));
                 }
             }
             Err(err) => {
                 failed += 1;
-                println!("  {}/{} {}: could not replay: {err}", i + 1, entries.len(), &hash[..12]);
+                println!(
+                    "  {}/{} {}: could not replay: {err}",
+                    i + 1,
+                    entries.len(),
+                    &hash[..12]
+                );
             }
         }
     }
@@ -151,7 +178,10 @@ pub fn fidelity() -> Result<()> {
     println!("transactions:                     {n}");
     println!("could not replay:                 {failed}");
     println!("identical result and events:      {same} / {}", n - failed);
-    println!("identical gas used:               {same_gas} / {}", n - failed);
+    println!(
+        "identical gas used:               {same_gas} / {}",
+        n - failed
+    );
     if !diffs.is_empty() {
         println!("\nfirst differences:");
         for d in diffs.iter().take(10) {
@@ -167,17 +197,23 @@ fn build_runtime(anvil: &Anvil, hook: &Value, artifact: &str, ctor: &str) -> Res
     let art: Value = serde_json::from_str(
         &fs::read_to_string(artifact).with_context(|| format!("cannot read {artifact}"))?,
     )?;
-    let init = art["bytecode"]["object"]
-        .as_str()
-        .context("no bytecode.object in the artifact (use Foundry's out/<File>.sol/<Contract>.json)")?;
+    let init = art["bytecode"]["object"].as_str().context(
+        "no bytecode.object in the artifact (use Foundry's out/<File>.sol/<Contract>.json)",
+    )?;
     if init.contains("__") {
         bail!("{artifact} needs library linking, which v0.1 does not support");
     }
-    let init = format!("0x{}{}", init.trim_start_matches("0x"), ctor.trim_start_matches("0x"));
+    let init = format!(
+        "0x{}{}",
+        init.trim_start_matches("0x"),
+        ctor.trim_start_matches("0x")
+    );
     let snap = anvil.rpc.call("evm_snapshot", json!([]))?;
     let deployed = s(&anvil.rpc.call("eth_getCode", json!([hook, "latest"]))?);
     anvil.rpc.call("anvil_setCode", json!([hook, init]))?;
-    let runtime = s(&anvil.rpc.call("eth_call", json!([{"to": hook, "data": "0x"}, "latest"]))?);
+    let runtime = s(&anvil
+        .rpc
+        .call("eth_call", json!([{"to": hook, "data": "0x"}, "latest"]))?);
     anvil.rpc.call("evm_revert", json!([snap]))?;
     if runtime.len() <= 2 {
         bail!("{artifact}: the constructor returned no code; check the constructor arguments");
@@ -185,14 +221,22 @@ fn build_runtime(anvil: &Anvil, hook: &Value, artifact: &str, ctor: &str) -> Res
     println!(
         "  {artifact}: {} bytes ({} the deployed code)",
         (runtime.len() - 2) / 2,
-        if runtime == deployed { "identical bytes to" } else { "different bytes from" }
+        if runtime == deployed {
+            "identical bytes to"
+        } else {
+            "different bytes from"
+        }
     );
     Ok(runtime)
 }
 
 /// File name without folders and extension: "builds/bug1_fee.json" -> "bug1_fee".
 fn stem(path: &str) -> String {
-    Path::new(path).file_stem().and_then(|s| s.to_str()).unwrap_or(path).to_string()
+    Path::new(path)
+        .file_stem()
+        .and_then(|s| s.to_str())
+        .unwrap_or(path)
+        .to_string()
 }
 
 /// `rehearse`: every transaction once on the deployed code and once on each new build,
@@ -249,7 +293,12 @@ pub fn rehearse(ctor: &str, artifacts: &[String]) -> Result<()> {
                 );
             }
             Err(err) => {
-                println!("  {}/{} {}: could not replay: {err}", i + 1, entries.len(), &hash[..12]);
+                println!(
+                    "  {}/{} {}: could not replay: {err}",
+                    i + 1,
+                    entries.len(),
+                    &hash[..12]
+                );
                 for sm in summaries.iter_mut() {
                     sm.failed += 1;
                 }

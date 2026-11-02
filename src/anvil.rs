@@ -1,5 +1,5 @@
 use crate::rpc::Rpc;
-use anyhow::{bail, Context, Result};
+use anyhow::{Context, Result, bail};
 use serde_json::json;
 use std::process::{Child, Command, Stdio};
 use std::thread::sleep;

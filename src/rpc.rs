@@ -1,5 +1,5 @@
-use anyhow::{anyhow, bail, Result};
-use serde_json::{json, Value};
+use anyhow::{Result, anyhow, bail};
+use serde_json::{Value, json};
 use std::thread::sleep;
 use std::time::Duration;
 
@@ -15,7 +15,11 @@ impl Rpc {
         let client = reqwest::blocking::Client::builder()
             .timeout(Duration::from_secs(timeout_secs))
             .build()?;
-        Ok(Rpc { url: url.to_string(), client, tries })
+        Ok(Rpc {
+            url: url.to_string(),
+            client,
+            tries,
+        })
     }
 
     /// The archive RPC for Base, from BASE_RPC_URL.
@@ -56,9 +60,16 @@ impl Rpc {
                 }
             };
             if let Some(e) = v.get("error") {
-                let msg = e.get("message").and_then(|m| m.as_str()).unwrap_or("").to_string();
+                let msg = e
+                    .get("message")
+                    .and_then(|m| m.as_str())
+                    .unwrap_or("")
+                    .to_string();
                 let lower = msg.to_ascii_lowercase();
-                if lower.contains("rate") || lower.contains("exceeded") || lower.contains("capacity") {
+                if lower.contains("rate")
+                    || lower.contains("exceeded")
+                    || lower.contains("capacity")
+                {
                     last = anyhow!("{method}: {msg}");
                     continue;
                 }

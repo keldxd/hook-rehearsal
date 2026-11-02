@@ -1,4 +1,4 @@
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
 use serde_json::Value;
 
 /// Uniswap v4 PoolManager on Base
@@ -18,7 +18,8 @@ pub fn num(v: &Value) -> Result<u64> {
         return Ok(n);
     }
     let t = v.as_str().ok_or_else(|| anyhow!("not a number: {v}"))?;
-    u64::from_str_radix(t.trim_start_matches("0x"), 16).map_err(|e| anyhow!("bad hex number {t}: {e}"))
+    u64::from_str_radix(t.trim_start_matches("0x"), 16)
+        .map_err(|e| anyhow!("bad hex number {t}: {e}"))
 }
 
 pub fn hex(n: u64) -> String {
@@ -102,7 +103,13 @@ mod tests {
 
     #[test]
     fn words() {
-        assert_eq!(word("0x0000000000000000000000000000000000000000000000000000000006c86eca"), Some(113_798_858));
-        assert_eq!(word("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"), None);
+        assert_eq!(
+            word("0x0000000000000000000000000000000000000000000000000000000006c86eca"),
+            Some(113_798_858)
+        );
+        assert_eq!(
+            word("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"),
+            None
+        );
     }
 }
