@@ -1,5 +1,7 @@
 use crate::rpc::Rpc;
-use crate::util::{TRANSFER, ZERO, all_earlier, chain, hex, is_hub, is_manager, num, s, topic_addr};
+use crate::util::{
+    TRANSFER, ZERO, all_earlier, chain, hex, is_hub, is_manager, num, s, topic_addr,
+};
 use anyhow::Result;
 use serde_json::{Value, json};
 use std::collections::{BTreeMap, BTreeSet};

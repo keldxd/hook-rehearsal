@@ -112,8 +112,13 @@ pub fn run_block(anvil: &Anvil, e: &Value, code: Option<&str>) -> Result<Outcome
     let h = send(a, &e["tx"])?;
     // BNB Chain has several blocks per second, so the parent block can carry the same
     // timestamp; anvil may refuse that, and then the next second is used instead.
-    if a.call("evm_setNextBlockTimestamp", json!([e["timestamp"]])).is_err() {
-        a.call("evm_setNextBlockTimestamp", json!([num(&e["timestamp"])? + 1]))?;
+    if a.call("evm_setNextBlockTimestamp", json!([e["timestamp"]]))
+        .is_err()
+    {
+        a.call(
+            "evm_setNextBlockTimestamp",
+            json!([num(&e["timestamp"])? + 1]),
+        )?;
     }
     a.call("evm_mine", json!([]))?;
     let r = a.call("eth_getTransactionReceipt", json!([h]))?;

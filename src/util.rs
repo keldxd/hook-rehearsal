@@ -33,12 +33,24 @@ static BSC: Chain = Chain {
     name: "BNB Chain (PancakeSwap Infinity)",
     rpc_env: "BSC_RPC_URL",
     managers: &[
-        ("0xa0ffb9c1ce1fe56963b0321b32e7a0302114058b", "CLPoolManager"),
-        ("0xc697d2898e0d09264376196696c51d7abbbaa4a9", "BinPoolManager"),
+        (
+            "0xa0ffb9c1ce1fe56963b0321b32e7a0302114058b",
+            "CLPoolManager",
+        ),
+        (
+            "0xc697d2898e0d09264376196696c51d7abbbaa4a9",
+            "BinPoolManager",
+        ),
     ],
     hubs: &[
-        ("0xa0ffb9c1ce1fe56963b0321b32e7a0302114058b", "CLPoolManager"),
-        ("0xc697d2898e0d09264376196696c51d7abbbaa4a9", "BinPoolManager"),
+        (
+            "0xa0ffb9c1ce1fe56963b0321b32e7a0302114058b",
+            "CLPoolManager",
+        ),
+        (
+            "0xc697d2898e0d09264376196696c51d7abbbaa4a9",
+            "BinPoolManager",
+        ),
         ("0x238a358808379702088667322f80ac48bad5e6c4", "Vault"),
     ],
     key_lookup: Some("0xa0ffb9c1ce1fe56963b0321b32e7a0302114058b"),
@@ -48,9 +60,15 @@ static BSC: Chain = Chain {
 /// CHAIN=base (default) or CHAIN=bsc.
 pub fn chain() -> &'static Chain {
     static C: OnceLock<&'static Chain> = OnceLock::new();
-    C.get_or_init(|| match std::env::var("CHAIN").unwrap_or_default().to_ascii_lowercase().as_str() {
-        "bsc" | "bnb" => &BSC,
-        _ => &BASE,
+    C.get_or_init(|| {
+        match std::env::var("CHAIN")
+            .unwrap_or_default()
+            .to_ascii_lowercase()
+            .as_str()
+        {
+            "bsc" | "bnb" => &BSC,
+            _ => &BASE,
+        }
     })
 }
 

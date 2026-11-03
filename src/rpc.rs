@@ -25,8 +25,13 @@ impl Rpc {
     /// The archive RPC for the chosen chain (BASE_RPC_URL or BSC_RPC_URL).
     pub fn remote() -> Result<Rpc> {
         let c = crate::util::chain();
-        let url = std::env::var(c.rpc_env)
-            .map_err(|_| anyhow!("set {} to an archive RPC endpoint for {}", c.rpc_env, c.name))?;
+        let url = std::env::var(c.rpc_env).map_err(|_| {
+            anyhow!(
+                "set {} to an archive RPC endpoint for {}",
+                c.rpc_env,
+                c.name
+            )
+        })?;
         Rpc::new(&url, 6, 180)
     }
 
