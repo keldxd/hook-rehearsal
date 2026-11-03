@@ -1,6 +1,6 @@
 use crate::replay::Outcome;
 use crate::rpc::Rpc;
-use crate::util::{PM, amount, pct, short, word};
+use crate::util::{amount, chain, pct, short, word};
 use serde_json::json;
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -24,7 +24,9 @@ pub struct Names {
 impl Names {
     pub fn new(rpc: Rpc) -> Names {
         let mut labels = BTreeMap::new();
-        labels.insert(PM.to_string(), "PoolManager".to_string());
+        for (a, n) in chain().hubs {
+            labels.insert(a.to_string(), n.to_string());
+        }
         Names {
             rpc,
             tokens: BTreeMap::new(),
@@ -124,7 +126,7 @@ pub fn differences(user: &str, old: &Outcome, new: &Outcome, names: &mut Names) 
         (true, false) => {
             out.push(finding(
                 "REVIEW",
-                "swap-now-fails",
+                "tx-now-fails",
                 "worked on the deployed code, reverts on the new code".into(),
             ));
             return out;
@@ -132,7 +134,7 @@ pub fn differences(user: &str, old: &Outcome, new: &Outcome, names: &mut Names) 
         (false, true) => {
             out.push(finding(
                 "REVIEW",
-                "swap-now-works",
+                "tx-now-works",
                 "reverted on the deployed code, works on the new code".into(),
             ));
             return out;
@@ -287,7 +289,7 @@ impl Summary {
         } else {
             "replay of the deployed code differs from mainnet, lower confidence"
         };
-        let mut block = format!("{}  swapper {user}\n  ({baseline})", &hash[..18]);
+        let mut block = format!("{}  sender {user}\n  ({baseline})", &hash[..18]);
         for f in &findings {
             block.push_str(&format!("\n  {:<6} {:<15} {}", f.level, f.kind, f.text));
             if f.level == "DANGER" {

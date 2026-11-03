@@ -1,8 +1,75 @@
 use anyhow::{Result, anyhow};
 use serde_json::Value;
+use std::sync::OnceLock;
 
-/// Uniswap v4 PoolManager on Base
-pub const PM: &str = "0x498581ff718922c3f8e6a244956af099b2652b2b";
+/// The chain and DEX being rehearsed, chosen with the CHAIN environment variable.
+pub struct Chain {
+    pub name: &'static str,
+    /// Environment variable that holds the archive RPC URL
+    pub rpc_env: &'static str,
+    /// Pool managers: their first indexed topic is the pool id
+    pub managers: &'static [(&'static str, &'static str)],
+    /// Contracts that hold everyone's tokens (pool managers, vaults): ignored when
+    /// deciding which transactions are related
+    pub hubs: &'static [(&'static str, &'static str)],
+    /// Pool manager with poolIdToPoolKey(bytes32), used to find a hook's transactions
+    /// through its pools' events when the hook emits no events of its own
+    pub key_lookup: Option<&'static str>,
+    /// Replay every earlier transaction in the block before the target (exact, and cheap on
+    /// chains with small blocks), instead of only the ones that touched the same things
+    pub all_earlier: bool,
+}
+
+static BASE: Chain = Chain {
+    name: "Base (Uniswap v4)",
+    rpc_env: "BASE_RPC_URL",
+    managers: &[("0x498581ff718922c3f8e6a244956af099b2652b2b", "PoolManager")],
+    hubs: &[("0x498581ff718922c3f8e6a244956af099b2652b2b", "PoolManager")],
+    key_lookup: None,
+    all_earlier: false,
+};
+
+static BSC: Chain = Chain {
+    name: "BNB Chain (PancakeSwap Infinity)",
+    rpc_env: "BSC_RPC_URL",
+    managers: &[
+        ("0xa0ffb9c1ce1fe56963b0321b32e7a0302114058b", "CLPoolManager"),
+        ("0xc697d2898e0d09264376196696c51d7abbbaa4a9", "BinPoolManager"),
+    ],
+    hubs: &[
+        ("0xa0ffb9c1ce1fe56963b0321b32e7a0302114058b", "CLPoolManager"),
+        ("0xc697d2898e0d09264376196696c51d7abbbaa4a9", "BinPoolManager"),
+        ("0x238a358808379702088667322f80ac48bad5e6c4", "Vault"),
+    ],
+    key_lookup: Some("0xa0ffb9c1ce1fe56963b0321b32e7a0302114058b"),
+    all_earlier: true,
+};
+
+/// CHAIN=base (default) or CHAIN=bsc.
+pub fn chain() -> &'static Chain {
+    static C: OnceLock<&'static Chain> = OnceLock::new();
+    C.get_or_init(|| match std::env::var("CHAIN").unwrap_or_default().to_ascii_lowercase().as_str() {
+        "bsc" | "bnb" => &BSC,
+        _ => &BASE,
+    })
+}
+
+/// RELATED=all or RELATED=touched overrides the chain's default.
+pub fn all_earlier() -> bool {
+    match std::env::var("RELATED").unwrap_or_default().as_str() {
+        "all" => true,
+        "touched" => false,
+        _ => chain().all_earlier,
+    }
+}
+
+pub fn is_manager(a: &str) -> bool {
+    chain().managers.iter().any(|(m, _)| *m == a)
+}
+
+pub fn is_hub(a: &str) -> bool {
+    chain().hubs.iter().any(|(m, _)| *m == a)
+}
 /// keccak256("Transfer(address,address,uint256)")
 pub const TRANSFER: &str = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
 pub const ZERO: &str = "0x0000000000000000000000000000000000000000";

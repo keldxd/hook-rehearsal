@@ -48,7 +48,18 @@ impl Anvil {
 }
 
 impl Drop for Anvil {
+    /// Stops anvil with an interrupt first, so it can save the state it downloaded to its
+    /// fork cache (reruns on the same blocks are then much faster); kills it if it hangs.
     fn drop(&mut self) {
+        let _ = Command::new("kill")
+            .args(["-INT", &self.child.id().to_string()])
+            .status();
+        for _ in 0..100 {
+            if let Ok(Some(_)) = self.child.try_wait() {
+                return;
+            }
+            sleep(Duration::from_millis(100));
+        }
         let _ = self.child.kill();
         let _ = self.child.wait();
     }
