@@ -1,0 +1,55 @@
+==== hook upgrade rehearsal: bug1_fee_10x ====
+real transactions replayed:     10
+could not replay:               0
+deployed code matches mainnet:  10 / 10
+same behaviour:                 0
+different behaviour:            10  (10 of them on transactions whose replay matches mainnet exactly)
+
+findings (transactions affected):
+  REVIEW events-changed  1
+  REVIEW flows-changed   1
+  REVIEW tx-now-fails    9
+
+transactions that behave differently:
+
+0xe749fcce81a21edf  sender 0x6d0a..9399
+  (replay of the deployed code matches mainnet exactly)
+  REVIEW tx-now-fails    worked on the deployed code, reverts on the new code
+
+0x9f4268f3fce1d84a  sender 0xc0ff..9671
+  (replay of the deployed code matches mainnet exactly)
+  REVIEW tx-now-fails    worked on the deployed code, reverts on the new code
+
+0xd4abde2fcce54ef7  sender 0xc0ff..9671
+  (replay of the deployed code matches mainnet exactly)
+  REVIEW tx-now-fails    worked on the deployed code, reverts on the new code
+
+0xdec593ecf6ed83dc  sender 0xaaa6..b485
+  (replay of the deployed code matches mainnet exactly)
+  REVIEW tx-now-fails    worked on the deployed code, reverts on the new code
+
+0xdd89c1c3f2d77bc2  sender 0xc0ff..9671
+  (replay of the deployed code matches mainnet exactly)
+  REVIEW tx-now-fails    worked on the deployed code, reverts on the new code
+
+0xf7e6034c77c7aa4b  sender 0xc0ff..9671
+  (replay of the deployed code matches mainnet exactly)
+  REVIEW tx-now-fails    worked on the deployed code, reverts on the new code
+
+0xe563f82fadce5136  sender 0x65a8..7675
+  (replay of the deployed code matches mainnet exactly)
+  REVIEW tx-now-fails    worked on the deployed code, reverts on the new code
+
+0x707dacbe448004eb  sender 0xc0ff..9671
+  (replay of the deployed code matches mainnet exactly)
+  REVIEW tx-now-fails    worked on the deployed code, reverts on the new code
+
+0x2841f372549a8989  sender 0x08eb..bea9
+  (replay of the deployed code matches mainnet exactly)
+  REVIEW flows-changed   flETH moves differently between other accounts: 0x676a..be1c -0.00000295808, PoolManager +0.00000156512, hook +0.00000139296
+  REVIEW flows-changed   BEAM moves differently between other accounts: PoolManager -0.873761, hook +0.873761
+  REVIEW events-changed  58 vs 58 events, first difference at #3 (from 0x2a66..322a)
+
+0x28581c7f3bd2bfe4  sender 0xcdf2..7346
+  (replay of the deployed code matches mainnet exactly)
+  REVIEW tx-now-fails    worked on the deployed code, reverts on the new code

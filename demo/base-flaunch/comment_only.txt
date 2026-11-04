@@ -1,0 +1,15 @@
+==== hook upgrade rehearsal: comment_only ====
+real transactions replayed:     1
+could not replay:               0
+deployed code matches mainnet:  1 / 1
+same behaviour:                 0
+different behaviour:            1  (1 of them on transactions whose replay matches mainnet exactly)
+
+findings (transactions affected):
+  REVIEW swap-now-fails  1
+
+transactions that behave differently:
+
+0x9458463922f3a1c7  swapper 0x8830..929e
+  (replay of the deployed code matches mainnet exactly)
+  REVIEW swap-now-fails  worked on the deployed code, reverts on the new code
