@@ -1,0 +1,208 @@
+unpacked 94 source files; optimizer True (0 runs), via_ir None, evm cancun, linked: []
+built clean
+built bug1_fee_10x
+built bug2_protocol_field
+built bug3_double_count
+Base (Uniswap v4): finding the last 30 transactions that touched 0x8dc3b85e1dc1c846ebf3971179a751896842e5dc (latest block 53499476)
+  scanned 1000 blocks, found 5
+  scanned 2000 blocks, found 19
+  scanned 3000 blocks, found 26
+  scanned 4000 blocks, found 28
+found 30; downloading them and the related earlier transactions in their blocks
+  1/30 0x9d23dc95d8 block 53494967 index 76: 6 related earlier
+  2/30 0x575c92bcec block 53495125 index 71: 0 related earlier
+  3/30 0xbb471bb92e block 53495639 index 10: 0 related earlier
+  4/30 0x60ebbfcb01 block 53496144 index 156: 4 related earlier
+  5/30 0x4c8399596f block 53496573 index 128: 8 related earlier
+  6/30 0xe9100ecd49 block 53496574 index 97: 0 related earlier
+  7/30 0x91d44947c9 block 53496656 index 8: 0 related earlier
+  8/30 0xfb4c953372 block 53496800 index 88: 1 related earlier
+  9/30 0x52e0421163 block 53496801 index 106: 0 related earlier
+  10/30 0x9ece25beaf block 53496801 index 107: 1 related earlier
+  11/30 0xd161db9233 block 53497168 index 19: 0 related earlier
+  12/30 0x7ea4fdc481 block 53497681 index 408: 2 related earlier
+  13/30 0x5572c17865 block 53498166 index 2: 0 related earlier
+  14/30 0x1ed8637a55 block 53498166 index 55: 1 related earlier
+  15/30 0x0f5f96907c block 53498166 index 56: 2 related earlier
+  16/30 0x42ff30781c block 53498191 index 4: 1 related earlier
+  17/30 0xe749fcce81 block 53498240 index 15: 0 related earlier
+  18/30 0x9f4268f3fc block 53498240 index 81: 1 related earlier
+  19/30 0xd4abde2fcc block 53498240 index 137: 2 related earlier
+  20/30 0xdec593ecf6 block 53498245 index 1: 0 related earlier
+  21/30 0xdd89c1c3f2 block 53498245 index 55: 1 related earlier
+  22/30 0xf7e6034c77 block 53498245 index 68: 2 related earlier
+  23/30 0xe563f82fad block 53498283 index 61: 0 related earlier
+  24/30 0x707dacbe44 block 53498283 index 104: 1 related earlier
+  25/30 0x2841f37254 block 53498307 index 161: 0 related earlier
+  26/30 0x28581c7f3b block 53498702 index 102: 4 related earlier
+  27/30 0xbbe9a4fd54 block 53499217 index 107: 2 related earlier
+  28/30 0x2680e96613 block 53499453 index 50: 3 related earlier
+  29/30 0xbf50139fce block 53499454 index 103: 0 related earlier
+  30/30 0x9ad11c6b96 block 53499454 index 121: 1 related earlier
+saved 30 transactions to cache/txs.json
+replaying 30 transactions on the deployed code
+  1/30 0x9d23dc95d8: DIFFERENT
+  2/30 0x575c92bcec: identical
+  3/30 0xbb471bb92e: identical
+  4/30 0x60ebbfcb01: identical
+  5/30 0x4c8399596f: identical
+  6/30 0xe9100ecd49: identical
+  7/30 0x91d44947c9: identical
+  8/30 0xfb4c953372: identical
+  9/30 0x52e0421163: identical
+  10/30 0x9ece25beaf: identical
+  11/30 0xd161db9233: identical
+  12/30 0x7ea4fdc481: DIFFERENT
+  13/30 0x5572c17865: identical
+  14/30 0x1ed8637a55: identical
+  15/30 0x0f5f96907c: identical
+  16/30 0x42ff30781c: identical
+  17/30 0xe749fcce81: identical
+  18/30 0x9f4268f3fc: identical
+  19/30 0xd4abde2fcc: identical
+  20/30 0xdec593ecf6: identical
+  21/30 0xdd89c1c3f2: identical
+  22/30 0xf7e6034c77: identical
+  23/30 0xe563f82fad: identical
+  24/30 0x707dacbe44: identical
+  25/30 0x2841f37254: identical
+  26/30 0x28581c7f3b: identical
+  27/30 0xbbe9a4fd54: identical
+  28/30 0x2680e96613: identical
+  29/30 0xbf50139fce: identical
+  30/30 0x9ad11c6b96: identical
+
+==== replay fidelity (deployed code vs what mainnet recorded) ====
+transactions:                     30
+could not replay:                 0
+identical result and events:      28 / 30
+identical gas used:               26 / 30
+
+first differences:
+  0x9d23dc95d8f27322cd374987cb5a85894838a0da47e8d60d09c3e09a9506fbba: 53 vs 53 events, first difference at #36 (from 0x8335..2913)
+  0x7ea4fdc481bfa294f35b63ab2b8e10e69d021e699dfbed2b45c4460fd4635af3: 28 vs 28 events, first difference at #1 (from 0x4200..0006)
+rehearsing 4 build(s) of hook 0x8dc3b85e1dc1c846ebf3971179a751896842e5dc
+  /home/xtreme/work/hook-rehearsal/target/flaunch-demo-any/builds/clean.json: 20390 bytes (identical bytes to the deployed code)
+  /home/xtreme/work/hook-rehearsal/target/flaunch-demo-any/builds/bug1_fee_10x.json: 20390 bytes (different bytes from the deployed code)
+  /home/xtreme/work/hook-rehearsal/target/flaunch-demo-any/builds/bug2_protocol_field.json: 20387 bytes (different bytes from the deployed code)
+  /home/xtreme/work/hook-rehearsal/target/flaunch-demo-any/builds/bug3_double_count.json: 20390 bytes (different bytes from the deployed code)
+replaying 30 real transactions
+
+  1/30 0x9d23dc95d8 (matches mainnet: no): findings clean 0, bug1_fee_10x 6, bug2_protocol_field 2, bug3_double_count 1
+  2/30 0x575c92bcec (matches mainnet: yes): findings clean 0, bug1_fee_10x 1, bug2_protocol_field 0, bug3_double_count 0
+  3/30 0xbb471bb92e (matches mainnet: yes): findings clean 0, bug1_fee_10x 1, bug2_protocol_field 0, bug3_double_count 0
+  4/30 0x60ebbfcb01 (matches mainnet: yes): findings clean 0, bug1_fee_10x 1, bug2_protocol_field 0, bug3_double_count 0
+  5/30 0x4c8399596f (matches mainnet: yes): findings clean 0, bug1_fee_10x 1, bug2_protocol_field 0, bug3_double_count 0
+  6/30 0xe9100ecd49 (matches mainnet: yes): findings clean 0, bug1_fee_10x 1, bug2_protocol_field 0, bug3_double_count 0
+  7/30 0x91d44947c9 (matches mainnet: yes): findings clean 0, bug1_fee_10x 1, bug2_protocol_field 0, bug3_double_count 0
+  8/30 0xfb4c953372 (matches mainnet: yes): findings clean 0, bug1_fee_10x 1, bug2_protocol_field 0, bug3_double_count 0
+  9/30 0x52e0421163 (matches mainnet: yes): findings clean 0, bug1_fee_10x 1, bug2_protocol_field 0, bug3_double_count 0
+  10/30 0x9ece25beaf (matches mainnet: yes): findings clean 0, bug1_fee_10x 1, bug2_protocol_field 0, bug3_double_count 0
+  11/30 0xd161db9233 (matches mainnet: yes): findings clean 0, bug1_fee_10x 1, bug2_protocol_field 0, bug3_double_count 0
+  12/30 0x7ea4fdc481 (matches mainnet: no): findings clean 0, bug1_fee_10x 1, bug2_protocol_field 0, bug3_double_count 0
+  13/30 0x5572c17865 (matches mainnet: yes): findings clean 0, bug1_fee_10x 1, bug2_protocol_field 0, bug3_double_count 0
+  14/30 0x1ed8637a55 (matches mainnet: yes): findings clean 0, bug1_fee_10x 1, bug2_protocol_field 0, bug3_double_count 0
+  15/30 0x0f5f96907c (matches mainnet: yes): findings clean 0, bug1_fee_10x 1, bug2_protocol_field 0, bug3_double_count 0
+  16/30 0x42ff30781c (matches mainnet: yes): findings clean 0, bug1_fee_10x 1, bug2_protocol_field 0, bug3_double_count 0
+  17/30 0xe749fcce81 (matches mainnet: yes): findings clean 0, bug1_fee_10x 1, bug2_protocol_field 0, bug3_double_count 0
+  18/30 0x9f4268f3fc (matches mainnet: yes): findings clean 0, bug1_fee_10x 1, bug2_protocol_field 0, bug3_double_count 0
+  19/30 0xd4abde2fcc (matches mainnet: yes): findings clean 0, bug1_fee_10x 1, bug2_protocol_field 0, bug3_double_count 0
+  20/30 0xdec593ecf6 (matches mainnet: yes): findings clean 0, bug1_fee_10x 1, bug2_protocol_field 0, bug3_double_count 0
+  21/30 0xdd89c1c3f2 (matches mainnet: yes): findings clean 0, bug1_fee_10x 1, bug2_protocol_field 0, bug3_double_count 0
+  22/30 0xf7e6034c77 (matches mainnet: yes): findings clean 0, bug1_fee_10x 1, bug2_protocol_field 0, bug3_double_count 0
+  23/30 0xe563f82fad (matches mainnet: yes): findings clean 0, bug1_fee_10x 1, bug2_protocol_field 0, bug3_double_count 0
+  24/30 0x707dacbe44 (matches mainnet: yes): findings clean 0, bug1_fee_10x 1, bug2_protocol_field 0, bug3_double_count 0
+  25/30 0x2841f37254 (matches mainnet: yes): findings clean 0, bug1_fee_10x 3, bug2_protocol_field 0, bug3_double_count 0
+  26/30 0x28581c7f3b (matches mainnet: yes): findings clean 0, bug1_fee_10x 1, bug2_protocol_field 0, bug3_double_count 0
+  27/30 0xbbe9a4fd54 (matches mainnet: yes): findings clean 0, bug1_fee_10x 1, bug2_protocol_field 0, bug3_double_count 0
+  28/30 0x2680e96613 (matches mainnet: yes): findings clean 0, bug1_fee_10x 1, bug2_protocol_field 0, bug3_double_count 0
+  29/30 0xbf50139fce (matches mainnet: yes): findings clean 0, bug1_fee_10x 1, bug2_protocol_field 0, bug3_double_count 0
+  30/30 0x9ad11c6b96 (matches mainnet: yes): findings clean 0, bug1_fee_10x 1, bug2_protocol_field 0, bug3_double_count 0
+
+==== hook upgrade rehearsal: clean ====
+real transactions replayed:     30
+could not replay:               0
+deployed code matches mainnet:  28 / 30
+same behaviour:                 30
+different behaviour:            0  (0 of them on transactions whose replay matches mainnet exactly)
+
+(full report: reports/clean.txt)
+
+==== hook upgrade rehearsal: bug1_fee_10x ====
+real transactions replayed:     30
+could not replay:               0
+deployed code matches mainnet:  28 / 30
+same behaviour:                 0
+different behaviour:            30  (28 of them on transactions whose replay matches mainnet exactly)
+
+findings (transactions affected):
+  REVIEW events-changed  2
+  REVIEW flows-changed   2
+  REVIEW gas-changed     1
+  REVIEW tx-now-fails    28
+
+transactions that behave differently:
+
+0x9d23dc95d8f27322  sender 0xce54..f556
+  (replay of the deployed code differs from mainnet, lower confidence)
+  REVIEW flows-changed   flETH moves differently between other accounts: PoolManager +0.165823, 0x64cf..fda3 -0.164165, 0x72e6..7dde -0.00135975
+  REVIEW flows-changed   BEAM moves differently between other accounts: 0x009b..f7e2 +97474.01, PoolManager -97474.01
+  REVIEW flows-changed   WETH moves differently between other accounts: 0x25a4..358e -0.164148, 0x64cf..fda3 +0.164148
+  REVIEW flows-changed   USDC moves differently between other accounts: 0x25a4..358e +377.839656, 0x4cd0..bc31 -377.768011, 0x1111..a902 -0.071645
+  REVIEW events-changed  53 vs 3 events, first difference at #1 (from 0x2a66..322a)
+  REVIEW gas-changed     gas 1195457 -> 1293095 (+8.167%)
+
+0x575c92bcec0c3348  sender 0xcdf2..7346
+  (replay of the deployed code matches mainnet exactly)
+  REVIEW tx-now-fails    worked on the deployed code, reverts on the new code
+
+0xbb471bb92ed0a172  sender 0xcdf2..7346
+  (replay of the deployed code matches mainnet exactly)
+  REVIEW tx-now-fails    worked on the deployed code, reverts on the new code
+
+0x60ebbfcb0172a754  sender 0xcdf2..7346
+  (replay of the deployed code matches mainnet exactly)
+  REVIEW tx-now-fails    worked on the deployed code, reverts on the new code
+
+... and 26 more
+
+(full report: reports/bug1_fee_10x.txt)
+
+==== hook upgrade rehearsal: bug2_protocol_field ====
+real transactions replayed:     30
+could not replay:               0
+deployed code matches mainnet:  28 / 30
+same behaviour:                 29
+different behaviour:            1  (0 of them on transactions whose replay matches mainnet exactly)
+
+findings (transactions affected):
+  REVIEW events-changed  1
+  REVIEW flows-changed   1
+
+transactions that behave differently:
+
+0x9d23dc95d8f27322  sender 0xce54..f556
+  (replay of the deployed code differs from mainnet, lower confidence)
+  REVIEW flows-changed   flETH moves differently between other accounts: 0x72e6..7dde -0.0000298482, hook +0.0000298482
+  REVIEW events-changed  53 vs 53 events, first difference at #14 (from 0x0000..7cf8)
+
+(full report: reports/bug2_protocol_field.txt)
+
+==== hook upgrade rehearsal: bug3_double_count ====
+real transactions replayed:     30
+could not replay:               0
+deployed code matches mainnet:  28 / 30
+same behaviour:                 29
+different behaviour:            1  (0 of them on transactions whose replay matches mainnet exactly)
+
+findings (transactions affected):
+  REVIEW events-changed  1
+
+transactions that behave differently:
+
+0x9d23dc95d8f27322  sender 0xce54..f556
+  (replay of the deployed code differs from mainnet, lower confidence)
+  REVIEW events-changed  53 vs 53 events, first difference at #16 (from 0x2154..40df)
+
+(full report: reports/bug3_double_count.txt)
+full reports are in reports/

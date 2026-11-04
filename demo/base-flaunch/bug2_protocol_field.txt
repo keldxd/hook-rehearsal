@@ -1,6 +1,17 @@
 ==== hook upgrade rehearsal: bug2_protocol_field ====
-real transactions replayed:     10
+real transactions replayed:     30
 could not replay:               0
-deployed code matches mainnet:  10 / 10
-same behaviour:                 10
-different behaviour:            0  (0 of them on transactions whose replay matches mainnet exactly)
+deployed code matches mainnet:  28 / 30
+same behaviour:                 29
+different behaviour:            1  (0 of them on transactions whose replay matches mainnet exactly)
+
+findings (transactions affected):
+  REVIEW events-changed  1
+  REVIEW flows-changed   1
+
+transactions that behave differently:
+
+0x9d23dc95d8f27322  sender 0xce54..f556
+  (replay of the deployed code differs from mainnet, lower confidence)
+  REVIEW flows-changed   flETH moves differently between other accounts: 0x72e6..7dde -0.0000298482, hook +0.0000298482
+  REVIEW events-changed  53 vs 53 events, first difference at #14 (from 0x0000..7cf8)

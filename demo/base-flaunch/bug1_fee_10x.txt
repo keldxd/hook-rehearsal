@@ -1,16 +1,86 @@
 ==== hook upgrade rehearsal: bug1_fee_10x ====
-real transactions replayed:     10
+real transactions replayed:     30
 could not replay:               0
-deployed code matches mainnet:  10 / 10
+deployed code matches mainnet:  28 / 30
 same behaviour:                 0
-different behaviour:            10  (10 of them on transactions whose replay matches mainnet exactly)
+different behaviour:            30  (28 of them on transactions whose replay matches mainnet exactly)
 
 findings (transactions affected):
-  REVIEW events-changed  1
-  REVIEW flows-changed   1
-  REVIEW tx-now-fails    9
+  REVIEW events-changed  2
+  REVIEW flows-changed   2
+  REVIEW gas-changed     1
+  REVIEW tx-now-fails    28
 
 transactions that behave differently:
+
+0x9d23dc95d8f27322  sender 0xce54..f556
+  (replay of the deployed code differs from mainnet, lower confidence)
+  REVIEW flows-changed   flETH moves differently between other accounts: PoolManager +0.165823, 0x64cf..fda3 -0.164165, 0x72e6..7dde -0.00135975
+  REVIEW flows-changed   BEAM moves differently between other accounts: 0x009b..f7e2 +97474.01, PoolManager -97474.01
+  REVIEW flows-changed   WETH moves differently between other accounts: 0x25a4..358e -0.164148, 0x64cf..fda3 +0.164148
+  REVIEW flows-changed   USDC moves differently between other accounts: 0x25a4..358e +377.839656, 0x4cd0..bc31 -377.768011, 0x1111..a902 -0.071645
+  REVIEW events-changed  53 vs 3 events, first difference at #1 (from 0x2a66..322a)
+  REVIEW gas-changed     gas 1195457 -> 1293095 (+8.167%)
+
+0x575c92bcec0c3348  sender 0xcdf2..7346
+  (replay of the deployed code matches mainnet exactly)
+  REVIEW tx-now-fails    worked on the deployed code, reverts on the new code
+
+0xbb471bb92ed0a172  sender 0xcdf2..7346
+  (replay of the deployed code matches mainnet exactly)
+  REVIEW tx-now-fails    worked on the deployed code, reverts on the new code
+
+0x60ebbfcb0172a754  sender 0xcdf2..7346
+  (replay of the deployed code matches mainnet exactly)
+  REVIEW tx-now-fails    worked on the deployed code, reverts on the new code
+
+0x4c8399596fdc6080  sender 0xb11b..1d16
+  (replay of the deployed code matches mainnet exactly)
+  REVIEW tx-now-fails    worked on the deployed code, reverts on the new code
+
+0xe9100ecd492d32e1  sender 0xc0ff..9671
+  (replay of the deployed code matches mainnet exactly)
+  REVIEW tx-now-fails    worked on the deployed code, reverts on the new code
+
+0x91d44947c992bc6b  sender 0xcdf2..7346
+  (replay of the deployed code matches mainnet exactly)
+  REVIEW tx-now-fails    worked on the deployed code, reverts on the new code
+
+0xfb4c9533720f6d7f  sender 0xb1e2..9019
+  (replay of the deployed code matches mainnet exactly)
+  REVIEW tx-now-fails    worked on the deployed code, reverts on the new code
+
+0x52e0421163604eb6  sender 0xc0ff..9671
+  (replay of the deployed code matches mainnet exactly)
+  REVIEW tx-now-fails    worked on the deployed code, reverts on the new code
+
+0x9ece25beaf6d2600  sender 0xc0ff..9671
+  (replay of the deployed code matches mainnet exactly)
+  REVIEW tx-now-fails    worked on the deployed code, reverts on the new code
+
+0xd161db9233400ae0  sender 0xcdf2..7346
+  (replay of the deployed code matches mainnet exactly)
+  REVIEW tx-now-fails    worked on the deployed code, reverts on the new code
+
+0x7ea4fdc481bfa294  sender 0xcdf2..7346
+  (replay of the deployed code differs from mainnet, lower confidence)
+  REVIEW tx-now-fails    worked on the deployed code, reverts on the new code
+
+0x5572c178650dd6a6  sender 0xaaa6..b485
+  (replay of the deployed code matches mainnet exactly)
+  REVIEW tx-now-fails    worked on the deployed code, reverts on the new code
+
+0x1ed8637a556ac23b  sender 0xc0ff..9671
+  (replay of the deployed code matches mainnet exactly)
+  REVIEW tx-now-fails    worked on the deployed code, reverts on the new code
+
+0x0f5f96907cd98b94  sender 0xc0ff..9671
+  (replay of the deployed code matches mainnet exactly)
+  REVIEW tx-now-fails    worked on the deployed code, reverts on the new code
+
+0x42ff30781c13346c  sender 0xcdf2..7346
+  (replay of the deployed code matches mainnet exactly)
+  REVIEW tx-now-fails    worked on the deployed code, reverts on the new code
 
 0xe749fcce81a21edf  sender 0x6d0a..9399
   (replay of the deployed code matches mainnet exactly)
@@ -51,5 +121,21 @@ transactions that behave differently:
   REVIEW events-changed  58 vs 58 events, first difference at #3 (from 0x2a66..322a)
 
 0x28581c7f3bd2bfe4  sender 0xcdf2..7346
+  (replay of the deployed code matches mainnet exactly)
+  REVIEW tx-now-fails    worked on the deployed code, reverts on the new code
+
+0xbbe9a4fd5435e336  sender 0xcdf2..7346
+  (replay of the deployed code matches mainnet exactly)
+  REVIEW tx-now-fails    worked on the deployed code, reverts on the new code
+
+0x2680e966136ccc4a  sender 0xaaa6..b485
+  (replay of the deployed code matches mainnet exactly)
+  REVIEW tx-now-fails    worked on the deployed code, reverts on the new code
+
+0xbf50139fce722006  sender 0xc0ff..9671
+  (replay of the deployed code matches mainnet exactly)
+  REVIEW tx-now-fails    worked on the deployed code, reverts on the new code
+
+0x9ad11c6b96ba4b32  sender 0xc0ff..9671
   (replay of the deployed code matches mainnet exactly)
   REVIEW tx-now-fails    worked on the deployed code, reverts on the new code

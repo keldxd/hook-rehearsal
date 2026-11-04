@@ -1,6 +1,6 @@
 ==== hook upgrade rehearsal: clean ====
-real transactions replayed:     10
+real transactions replayed:     30
 could not replay:               0
-deployed code matches mainnet:  10 / 10
-same behaviour:                 10
+deployed code matches mainnet:  28 / 30
+same behaviour:                 30
 different behaviour:            0  (0 of them on transactions whose replay matches mainnet exactly)
